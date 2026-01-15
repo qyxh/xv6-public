@@ -17,6 +17,9 @@ extern char end[]; // first address after kernel loaded from ELF file
 int
 main(void)
 {
+
+  // 初始化物理内存分配器（第一阶段：只分配前4MB物理内存）
+  // end：内核ELF文件加载后的第一个空闲地址；P2V(4*1024*1024)：4MB物理地址转虚拟地址
   kinit1(end, P2V(4*1024*1024)); // phys page allocator
   kvmalloc();      // kernel page table
   mpinit();        // detect other processors
