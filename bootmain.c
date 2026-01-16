@@ -36,11 +36,19 @@ bootmain(void)
 
   elf = (struct elfhdr*)0x10000;    // 将ELF内核的头部加载到物理内存地址0x10000（xv6约定的位置）
 
+  // ========== 可视化日志1：进入Bootloader ==========
+  // puts("[1]\n");
+
   readseg((uchar*)elf, 4096, 0); // 从磁盘偏移量0的位置，读取ELF头的大小到内存0x10000
 
   // Is this an ELF executable?
-  if(elf->magic != ELF_MAGIC)
+  if(elf->magic != ELF_MAGIC){
+    // puts("[ERR]\n");
     return;  // let bootasm.S handle error
+  }
+
+  // ========== 可视化日志2：ELF头验证成功 ==========
+  // puts("[2]\n");
 
   // Load each program segment (ignores ph flags).
   ph = (struct proghdr*)((uchar*)elf + elf->phoff);
@@ -52,6 +60,8 @@ bootmain(void)
       stosb(pa + ph->filesz, 0, ph->memsz - ph->filesz);
   }
 
+  // ========== 可视化日志3：内核加载完成 ==========
+  // puts("[3]\n");
   // Call the entry point from the ELF header.
   // Does not return!
   entry = (void(*)(void))(elf->entry);
